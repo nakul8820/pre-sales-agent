@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Website Audit Report — {{ company_name }}</title>
+  <style>
+    /* ====== GLOBAL RESET & TYPOGRAPHY ====== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0d14;
+      color: #e2e8f0;
+      line-height: 1.6;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ====== PAGE WRAPPER ====== */
+    .report-wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    /* ====== HERO COVER PAGE ====== */
+    .cover-page {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      min-height: 320px;
+      padding: 48px 56px 40px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .cover-page::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cover-logo-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .prospect-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      border: 2px solid rgba(139, 92, 246, 0.5);
+      object-fit: contain;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 8px;
+    }
+
+    .prospect-logo-fallback {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      border: 2px solid rgba(139, 92, 246, 0.5);
+      background: linear-gradient(135deg, #6d28d9, #7c3aed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+      color: white;
+    }
+
+    .cover-meta h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    .cover-meta .domain-badge {
+      display: inline-block;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: #c4b5fd;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-top: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .cover-title {
+      font-size: 36px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .cover-title span {
+      background: linear-gradient(90deg, #818cf8, #c084fc, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cover-subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    .cover-meta-row {
+      display: flex;
+      gap: 24px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    .cover-meta-item {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .cover-meta-item strong {
+      display: block;
+      color: #94a3b8;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 2px;
+    }
+
+    /* ====== MODERATION ALERT BANNER ====== */
+    .moderation-banner {
+      padding: 14px 56px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .moderation-banner.safe {
+      background: rgba(16, 185, 129, 0.08);
+      border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .moderation-banner.flagged {
+      background: rgba(239, 68, 68, 0.08);
+      border-bottom: 1px solid rgba(239, 68, 68, 0.25);
+      color: #f87171;
+    }
+
+    .moderation-banner .icon { font-size: 16px; }
+
+    /* ====== CONTENT SECTIONS ====== */
+    .section {
+      padding: 40px 56px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      background: rgba(139, 92, 246, 0.12);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #f1f5f9;
+      letter-spacing: -0.3px;
+    }
+
+    .section-subtitle {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    /* ====== OVERALL SCORE HERO ====== */
+    .score-hero {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 32px 36px;
+      margin-bottom: 28px;
+    }
+
+    .score-circle {
+      flex-shrink: 0;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 4px solid;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .score-circle-number {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .score-circle-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-top: 2px;
+    }
+
+    .grade-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .score-hero-text h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+    }
+
+    .score-hero-text p {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    /* ====== CATEGORY SCORE GRID ====== */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 0;
+    }
+
+    .category-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      padding: 18px 16px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .category-card-icon { font-size: 20px; margin-bottom: 8px; }
+
+    .category-card-score {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .category-card-name {
+      font-size: 11px;
+      font-weight: 500;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+    }
+
+    .score-bar-track {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.6s ease;
+    }
+
+    /* ====== CRITICAL FOCUS AREAS ====== */
+    .focus-item {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-left: 3px solid;
+      border-radius: 0 12px 12px 0;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+    }
+
+    .focus-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .focus-severity-badge {
+      flex-shrink: 0;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .severity-high { background: rgba(239, 68, 68, 0.12); color: #f87171; }
+    .severity-medium { background: rgba(245, 158, 11, 0.12); color: #fbbf24; }
+    .severity-low { background: rgba(99, 102, 241, 0.12); color: #818cf8; }
+
+    .border-high { border-left-color: #ef4444; }
+    .border-medium { border-left-color: #f59e0b; }
+    .border-low { border-left-color: #6366f1; }
+
+    .focus-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .focus-description {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .focus-impact {
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .pitch-angle-box {
+      background: rgba(139, 92, 246, 0.06);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #c4b5fd;
+      font-weight: 500;
+      font-style: italic;
+    }
+
+    .pitch-angle-box::before { content: '💡 Pitch: '; font-style: normal; font-weight: 600; }
+
+    /* ====== CATEGORY DETAIL SECTIONS ====== */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .detail-icon { font-size: 16px; flex-shrink: 0; }
+
+    .detail-label {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 1px;
+    }
+
+    .detail-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .detail-value.good { color: #34d399; }
+    .detail-value.warning { color: #fbbf24; }
+    .detail-value.bad { color: #f87171; }
+
+    /* ====== KEYWORDS TABLE ====== */
+    .keywords-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .keywords-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .keywords-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #cbd5e1;
+    }
+
+    .keywords-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    .position-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 0 6px;
+    }
+
+    .pos-1 { background: rgba(234, 179, 8, 0.15); color: #facc15; }
+    .pos-3 { background: rgba(16, 185, 129, 0.12); color: #34d399; }
+    .pos-other { background: rgba(148, 163, 184, 0.08); color: #94a3b8; }
+
+    /* ====== BROKEN LINKS TABLE ====== */
+    .links-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .links-table th {
+      text-align: left;
+      padding: 9px 12px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .links-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #94a3b8;
+      word-break: break-all;
+    }
+
+    .status-404 {
+      display: inline-block;
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border-radius: 5px;
+      padding: 2px 7px;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .status-ok {
+      color: #34d399;
+    }
+
+    /* ====== FOOTER ====== */
+    .report-footer {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 24px 56px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-brand {
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      letter-spacing: -0.2px;
+    }
+
+    .footer-brand span {
+      color: #7c3aed;
+    }
+
+    .footer-meta {
+      font-size: 11px;
+      color: #334155;
+    }
+
+    /* ====== SCORE COLOR UTILITIES ====== */
+    .grade-A { color: #10b981; border-color: #10b981; }
+    .grade-B { color: #3b82f6; border-color: #3b82f6; }
+    .grade-C { color: #f59e0b; border-color: #f59e0b; }
+    .grade-D { color: #ef4444; border-color: #ef4444; }
+    .grade-F { color: #dc2626; border-color: #dc2626; }
+
+    .bg-grade-A { background: rgba(16, 185, 129, 0.12); color: #10b981; }
+    .bg-grade-B { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+    .bg-grade-C { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+    .bg-grade-D { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+    .bg-grade-F { background: rgba(220, 38, 38, 0.12); color: #dc2626; }
+
+    .bar-A { background: linear-gradient(90deg, #10b981, #34d399); }
+    .bar-B { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .bar-C { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .bar-D { background: linear-gradient(90deg, #ef4444, #f87171); }
+    .bar-F { background: linear-gradient(90deg, #dc2626, #ef4444); }
+
+    /* ====== PRINT ====== */
+    @media print {
+      body { background: #0a0d14; }
+      .section { page-break-inside: avoid; }
+      .focus-item { page-break-inside: avoid; }
+      .category-card { page-break-inside: avoid; }
+    }
+
+    /* ====== EMPTY STATE ====== */
+    .empty-state {
+      text-align: center;
+      padding: 32px;
+      color: #475569;
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 12px;
+      border: 1px dashed rgba(255, 255, 255, 0.08);
+    }
+
+    .empty-state .icon { font-size: 28px; margin-bottom: 10px; }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    .tag-good { background: rgba(16, 185, 129, 0.1); color: #34d399; }
+    .tag-bad { background: rgba(239, 68, 68, 0.1); color: #f87171; }
+  </style>
+</head>
+<body>
+<div class="report-wrapper">
+
+  <!-- ====== COVER PAGE ====== -->
+  <div class="cover-page">
+    <div class="cover-logo-row">
+      {% if logo_url %}
+        <img class="prospect-logo" src="{{ logo_url }}" alt="{{ company_name }} logo" onerror="this.style.display='none'" />
+      {% else %}
+        <div class="prospect-logo-fallback">{{ company_name[0] | upper }}</div>
+      {% endif %}
+      <div>
+        <div class="cover-meta">
+          <h1>{{ company_name }}</h1>
+          <div class="domain-badge">{{ domain }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-title">
+      Website Digital <span>Audit Report</span>
+    </div>
+    <div class="cover-subtitle">B2B Sales Intelligence — Prospect Digital Analyzer</div>
+
+    <div class="cover-meta-row">
+      <div class="cover-meta-item">
+        <strong>Report Date</strong>
+        {{ report_date }}
+      </div>
+      <div class="cover-meta-item">
+        <strong>Overall Score</strong>
+        {{ overall_score }}/100
+      </div>
+      <div class="cover-meta-item">
+        <strong>Grade</strong>
+        {{ letter_grade }} — {{ grade_label }}
+      </div>
+      <div class="cover-meta-item">
+        <strong>Pages Crawled</strong>
+        {{ pages_crawled }}
+      </div>
+      {% if contact_name %}
+      <div class="cover-meta-item">
+        <strong>Contact</strong>
+        {{ contact_name }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ====== MODERATION BANNER ====== -->
+  {% if moderation_safe %}
+  <div class="moderation-banner safe">
+    <span class="icon">✅</span>
+    <span>Content Appropriateness Gate: <strong>Approved for Pitching</strong> — No restricted or unsuitable content detected.</span>
+  </div>
+  {% else %}
+  <div class="moderation-banner flagged">
+    <span class="icon">🚫</span>
+    <span>Content Appropriateness Gate: <strong>Flagged for Review</strong> — This prospect domain may contain restricted content. Sales rep review required before outreach.</span>
+  </div>
+  {% endif %}
+
+  <!-- ====== EXECUTIVE SCORE SUMMARY ====== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📊</div>
+      <div>
+        <div class="section-title">Executive Score Summary</div>
+        <div class="section-subtitle">Overall website health and digital readiness index</div>
+      </div>
+    </div>
+
+    <div class="score-hero">
+      <div class="score-circle grade-{{ letter_grade }}">
+        <div class="score-circle-number grade-{{ letter_grade }}">{{ overall_score }}</div>
+        <div class="score-circle-label">/ 100</div>
+      </div>
+
+      <div class="grade-badge bg-grade-{{ letter_grade }}" style="font-size:32px;width:64px;height:64px;border-radius:16px;">{{ letter_grade }}</div>
+
+      <div class="score-hero-text">
+        <h2>{{ grade_label }} Digital Presence</h2>
+        <p style="margin-bottom:10px;">
+          {{ company_name }} scored <strong style="color:#e2e8f0;">{{ overall_score }}/100</strong> across 5 evaluated dimensions.
+          {% if overall_score < 60 %}
+          This indicates significant opportunities to improve their web presence — positioning your agency for a high-value engagement.
+          {% elif overall_score < 80 %}
+          Moderate gaps exist across key performance and lead generation dimensions — a clear pitch opportunity.
+          {% else %}
+          Strong overall presence, but targeted improvements in under-performing categories can add measurable ROI.
+          {% endif %}
+        </p>
+        <p>Crawled <strong style="color:#e2e8f0;">{{ pages_crawled }}</strong> pages in {{ crawl_duration }}s — {{ critical_focus_count }} critical focus area{{ 's' if critical_focus_count != 1 else '' }} identified.</p>
+      </div>
+    </div>
+
+    <!-- CATEGORY SCORE GRID -->
+    <div class="category-grid">
+      {% for cat in categories %}
+      <div class="category-card">
+        <div class="category-card-icon">{{ cat.icon }}</div>
+        <div class="category-card-score grade-{{ cat.grade }}">{{ cat.score }}</div>
+        <div class="category-card-name">{{ cat.name }}</div>
+        <div class="score-bar-track">
+          <div class="score-bar-fill bar-{{ cat.grade }}" style="width: {{ cat.score }}%;"></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ====== CRITICAL FOCUS AREAS ====== -->
+  {% if critical_focus_areas %}
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🎯</div>
+      <div>
+        <div class="section-title">Areas Requiring Critical Focus</div>
+        <div class="section-subtitle">Ranked pitch angles — highest business impact first</div>
+      </div>
+    </div>
+
+    {% for focus in critical_focus_areas %}
+    <div class="focus-item border-{{ focus.severity }}">
+      <div class="focus-header">
+        <span class="focus-severity-badge severity-{{ focus.severity }}">{{ focus.severity }}</span>
+        <span class="focus-title">{{ focus.title }}</span>
+      </div>
+      <div class="focus-description">{{ focus.description }}</div>
+      <div class="focus-impact">📉 <em>Business Impact:</em> {{ focus.impact }}</div>
+      <div class="pitch-angle-box">{{ focus.pitch_angle }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- ====== PERFORMANCE & CORE WEB VITALS ====== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">⚡</div>
+      <div>
+        <div class="section-title">Performance & Core Web Vitals</div>
+        <div class="section-subtitle">Google PageSpeed Insights — {{ pagespeed.status }}</div>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-item">
+        <div class="detail-icon">🎯</div>
+        <div>
+          <div class="detail-label">Performance Score</div>
+          <div class="detail-value {% if pagespeed.performance_score >= 80 %}good{% elif pagespeed.performance_score >= 50 %}warning{% else %}bad{% endif %}">
+            {{ pagespeed.performance_score }}/100
+          </div>
+        </div>
+      </div>
+      {% if pagespeed.fcp_ms %}
+      <div class="detail-item">
+        <div class="detail-icon">🖼️</div>
+        <div>
+          <div class="detail-label">First Contentful Paint (FCP)</div>
+          <div class="detail-value {% if pagespeed.fcp_ms < 1800 %}good{% elif pagespeed.fcp_ms < 3000 %}warning{% else %}bad{% endif %}">
+            {{ (pagespeed.fcp_ms / 1000) | round(1) }}s
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% if pagespeed.lcp_ms %}
+      <div class="detail-item">
+        <div class="detail-icon">📸</div>
+        <div>
+          <div class="detail-label">Largest Contentful Paint (LCP)</div>
+          <div class="detail-value {% if pagespeed.lcp_ms < 2500 %}good{% elif pagespeed.lcp_ms < 4000 %}warning{% else %}bad{% endif %}">
+            {{ (pagespeed.lcp_ms / 1000) | round(1) }}s
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% if pagespeed.cls_score is not none %}
+      <div class="detail-item">
+        <div class="detail-icon">📐</div>
+        <div>
+          <div class="detail-label">Cumulative Layout Shift (CLS)</div>
+          <div class="detail-value {% if pagespeed.cls_score < 0.1 %}good{% elif pagespeed.cls_score < 0.25 %}warning{% else %}bad{% endif %}">
+            {{ pagespeed.cls_score }}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% if pagespeed.tbt_ms %}
+      <div class="detail-item">
+        <div class="detail-icon">⏱️</div>
+        <div>
+          <div class="detail-label">Total Blocking Time (TBT)</div>
+          <div class="detail-value {% if pagespeed.tbt_ms < 200 %}good{% elif pagespeed.tbt_ms < 600 %}warning{% else %}bad{% endif %}">
+            {{ pagespeed.tbt_ms }}ms
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if pagespeed.opportunities %}
+    <div style="margin-top: 20px;">
+      <div style="font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;">⚡ Optimization Opportunities</div>
+      {% for opp in pagespeed.opportunities %}
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.025);border-radius:8px;margin-bottom:8px;border-left:2px solid #f59e0b;">
+        <div style="font-size:12px;color:#cbd5e1;flex:1;">{{ opp.title }}</div>
+        <div style="font-size:11px;font-weight:600;color:#fbbf24;white-space:nowrap;">{{ opp.display_value }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ====== SEO & TRAFFIC ====== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🔍</div>
+      <div>
+        <div class="section-title">SEO & Organic Traffic</div>
+        <div class="section-subtitle">SEMrush Domain Analysis — {{ semrush.status }}</div>
+      </div>
+    </div>
+
+    <div class="detail-grid" style="margin-bottom: 24px;">
+      <div class="detail-item">
+        <div class="detail-icon">📈</div>
+        <div>
+          <div class="detail-label">Monthly Organic Traffic</div>
+          <div class="detail-value">{{ "{:,}".format(semrush.organic_traffic) }}</div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">🔑</div>
+        <div>
+          <div class="detail-label">Ranking Keywords</div>
+          <div class="detail-value">{{ "{:,}".format(semrush.organic_keywords) }}</div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">💰</div>
+        <div>
+          <div class="detail-label">Traffic Value (Organic CPC)</div>
+          <div class="detail-value">${{ "{:,.0f}".format(semrush.organic_cost) }}/mo</div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">🏆</div>
+        <div>
+          <div class="detail-label">Domain Rank</div>
+          <div class="detail-value">{{ "{:,}".format(semrush.domain_rank) }}</div>
+        </div>
+      </div>
+    </div>
+
+    {% if semrush.top_keywords %}
+    <div style="font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;">Top Ranking Keywords</div>
+    <table class="keywords-table">
+      <thead>
+        <tr>
+          <th>Keyword</th>
+          <th>Position</th>
+          <th>Monthly Volume</th>
+          <th>CPC</th>
+          <th>Traffic %</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for kw in semrush.top_keywords %}
+        <tr>
+          <td>{{ kw.keyword }}</td>
+          <td>
+            <span class="position-badge {% if kw.position == 1 %}pos-1{% elif kw.position <= 3 %}pos-3{% else %}pos-other{% endif %}">
+              #{{ kw.position }}
+            </span>
+          </td>
+          <td>{{ "{:,}".format(kw.search_volume) }}</td>
+          <td>${{ kw.cpc }}</td>
+          <td>{{ kw.traffic_percent }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+
+  <!-- ====== LEAD GENERATION ====== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🎣</div>
+      <div>
+        <div class="section-title">Lead Generation Assessment</div>
+        <div class="section-subtitle">Inbound conversion capability analysis</div>
+      </div>
+    </div>
+
+    <div class="detail-grid" style="margin-bottom: 20px;">
+      <div class="detail-item">
+        <div class="detail-icon">📋</div>
+        <div>
+          <div class="detail-label">Contact / Lead Forms</div>
+          <div class="detail-value {% if lead_gen.has_contact_form %}good{% else %}bad{% endif %}">
+            {% if lead_gen.has_contact_form %}✅ Detected{% else %}❌ Missing{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">💬</div>
+        <div>
+          <div class="detail-label">Live Chat Widget</div>
+          <div class="detail-value {% if lead_gen.has_live_chat %}good{% else %}bad{% endif %}">
+            {% if lead_gen.has_live_chat %}✅ Detected ({{ lead_gen.chat_providers | join(', ') }}){% else %}❌ Missing{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">📞</div>
+        <div>
+          <div class="detail-label">Click-to-Call Phone</div>
+          <div class="detail-value {% if lead_gen.has_phone_number %}good{% else %}warning{% endif %}">
+            {% if lead_gen.has_phone_number %}✅ Found{% else %}⚠️ Not found{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">📅</div>
+        <div>
+          <div class="detail-label">Booking / Scheduling Widget</div>
+          <div class="detail-value {% if lead_gen.has_booking_widget %}good{% else %}bad{% endif %}">
+            {% if lead_gen.has_booking_widget %}✅ Detected{% else %}❌ Missing{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">📧</div>
+        <div>
+          <div class="detail-label">Email Address</div>
+          <div class="detail-value {% if lead_gen.has_email_address %}good{% else %}warning{% endif %}">
+            {% if lead_gen.has_email_address %}✅ Found{% else %}⚠️ Not visible{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">🔔</div>
+        <div>
+          <div class="detail-label">Newsletter / Email Capture</div>
+          <div class="detail-value {% if lead_gen.has_newsletter %}good{% else %}warning{% endif %}">
+            {% if lead_gen.has_newsletter %}✅ Detected{% else %}⚠️ Not found{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if lead_gen.detected_ctas %}
+    <div style="font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;">Detected CTAs</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      {% for cta in lead_gen.detected_ctas %}
+      <span class="tag tag-good">{{ cta }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if lead_gen.form_providers %}
+    <div style="font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;">Form Providers Detected</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      {% for fp in lead_gen.form_providers %}
+      <span class="tag tag-good">{{ fp }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ====== UI/UX & TECHNICAL ====== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🎨</div>
+      <div>
+        <div class="section-title">UI/UX & Technical Audit</div>
+        <div class="section-subtitle">Accessibility, mobile readiness, and on-page SEO signals</div>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-item">
+        <div class="detail-icon">📱</div>
+        <div>
+          <div class="detail-label">Mobile Responsive</div>
+          <div class="detail-value {% if ui_ux.mobile_responsive %}good{% else %}bad{% endif %}">
+            {% if ui_ux.mobile_responsive %}✅ Yes{% else %}❌ Not mobile-ready{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">🔒</div>
+        <div>
+          <div class="detail-label">SSL / HTTPS</div>
+          <div class="detail-value {% if ui_ux.has_ssl %}good{% else %}bad{% endif %}">
+            {% if ui_ux.has_ssl %}✅ Enabled{% else %}❌ Missing — Major risk{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">🏷️</div>
+        <div>
+          <div class="detail-label">Title Tag</div>
+          <div class="detail-value {% if ui_ux.has_title_tag %}good{% else %}bad{% endif %}">
+            {% if ui_ux.has_title_tag %}✅ Present{% else %}❌ Missing{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">📝</div>
+        <div>
+          <div class="detail-label">Meta Description</div>
+          <div class="detail-value {% if ui_ux.has_meta_description %}good{% else %}bad{% endif %}">
+            {% if ui_ux.has_meta_description %}✅ Present{% else %}❌ Missing{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">📷</div>
+        <div>
+          <div class="detail-label">Image Alt Text Coverage</div>
+          <div class="detail-value {% if ui_ux.alt_coverage_percent >= 80 %}good{% elif ui_ux.alt_coverage_percent >= 50 %}warning{% else %}bad{% endif %}">
+            {{ ui_ux.alt_coverage_percent | round(0) }}% ({{ ui_ux.missing_alt_tags_count }} missing)
+          </div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">📰</div>
+        <div>
+          <div class="detail-label">H1 Heading Structure</div>
+          <div class="detail-value {% if ui_ux.has_h1 %}good{% else %}bad{% endif %}">
+            {% if ui_ux.has_h1 %}✅ Present{% else %}❌ Missing{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== BROKEN LINKS ====== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🔗</div>
+      <div>
+        <div class="section-title">Broken Links Audit</div>
+        <div class="section-subtitle">{{ broken_links.total_links_checked }} links checked across {{ pages_crawled }} pages</div>
+      </div>
+    </div>
+
+    <div class="detail-grid" style="margin-bottom: 20px;">
+      <div class="detail-item">
+        <div class="detail-icon">🔍</div>
+        <div>
+          <div class="detail-label">Total Links Checked</div>
+          <div class="detail-value">{{ broken_links.total_links_checked }}</div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">💔</div>
+        <div>
+          <div class="detail-label">Broken Links Found</div>
+          <div class="detail-value {% if broken_links.broken_links_count == 0 %}good{% else %}bad{% endif %}">
+            {% if broken_links.broken_links_count == 0 %}✅ None{% else %}❌ {{ broken_links.broken_links_count }}{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">🏠</div>
+        <div>
+          <div class="detail-label">Internal Broken</div>
+          <div class="detail-value {% if broken_links.internal_broken_count == 0 %}good{% else %}bad{% endif %}">
+            {{ broken_links.internal_broken_count }}
+          </div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">🌐</div>
+        <div>
+          <div class="detail-label">External Broken</div>
+          <div class="detail-value {% if broken_links.external_broken_count == 0 %}good{% else %}warning{% endif %}">
+            {{ broken_links.external_broken_count }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if broken_links.broken_links and broken_links.broken_links | length > 0 %}
+    <table class="links-table">
+      <thead>
+        <tr>
+          <th>URL</th>
+          <th>Status</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for link in broken_links.broken_links[:15] %}
+        <tr>
+          <td style="max-width:480px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ link.url }}</td>
+          <td><span class="status-404">{{ link.status_code }}</span></td>
+          <td style="color:#64748b;">{{ link.link_type | default('internal') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+      <div class="icon">✅</div>
+      <div>No broken links detected across all crawled pages. Excellent link health!</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ====== FOOTER ====== -->
+  <div class="report-footer">
+    <div class="footer-brand">Prospect <span>Digital</span> Analyzer</div>
+    <div class="footer-meta">Generated {{ report_date }} · {{ domain }} · Confidential Sales Intelligence</div>
+  </div>
+
+</div>
+</body>
+</html>

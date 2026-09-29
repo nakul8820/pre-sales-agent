@@ -1,0 +1,93 @@
+@import './styles/theme.css';
+
+/* Layout Utilities */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+  width: 100%;
+}
+
+/* Glass Card */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  padding: 1.75rem;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+}
+
+.glass-card:hover {
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-focus);
+}
+
+/* Pulse Animation */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.15);
+  }
+}
+
+.pulsing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse-glow 2s infinite ease-in-out;
+}

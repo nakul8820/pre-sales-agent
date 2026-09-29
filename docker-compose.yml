@@ -1,0 +1,138 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: prospect_analyzer_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres_password}
+      POSTGRES_DB: ${POSTGRES_DB:-prospect_analyzer_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-prospect_analyzer_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - prospect_network
+
+  # Redis Broker & Cache
+  redis:
+    image: redis:7-alpine
+    container_name: prospect_analyzer_redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - prospect_network
+
+  # FastAPI Backend API Server
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: prospect_analyzer_api
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres_password}
+      - POSTGRES_DB=${POSTGRES_DB:-prospect_analyzer_db}
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres_password}@db:5432/${POSTGRES_DB:-prospect_analyzer_db}
+      - DATABASE_URL_SYNC=postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres_password}@db:5432/${POSTGRES_DB:-prospect_analyzer_db}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - PAGESPEED_API_KEY=${PAGESPEED_API_KEY:-}
+      - SEMRUSH_API_KEY=${SEMRUSH_API_KEY:-}
+      - HUNTER_API_KEY=${HUNTER_API_KEY:-}
+      - HUBSPOT_ACCESS_TOKEN=${HUBSPOT_ACCESS_TOKEN:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - prospect_network
+
+  # Celery Background Worker
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: prospect_analyzer_celery_worker
+    restart: unless-stopped
+    command: celery -A app.tasks.celery_app worker --loglevel=info --concurrency=4
+    volumes:
+      - ./backend:/app
+    environment:
+      - ENVIRONMENT=development
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres_password}
+      - POSTGRES_DB=${POSTGRES_DB:-prospect_analyzer_db}
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres_password}@db:5432/${POSTGRES_DB:-prospect_analyzer_db}
+      - DATABASE_URL_SYNC=postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres_password}@db:5432/${POSTGRES_DB:-prospect_analyzer_db}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - prospect_network
+
+  # Frontend (React / Vite)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: prospect_analyzer_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - api
+    networks:
+      - prospect_network
+
+volumes:
+  pgdata:
+    driver: local
+  redisdata:
+    driver: local
+
+networks:
+  prospect_network:
+    driver: bridge
